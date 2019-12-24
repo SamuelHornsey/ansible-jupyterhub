@@ -6,6 +6,7 @@
   command: /bin/sh /tmp/docker.sh
 
 - name: start docker
-  service:
+  systemd:
     name: docker
     state: started
+    enabled: yes

@@ -6,3 +6,8 @@
     - node
     - docker
     - jupyter
+
+- hosts: nginx
+  become: yes
+  roles:
+    - nginx

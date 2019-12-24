@@ -11,7 +11,15 @@ Vagrant.configure("2") do |config|
   config.vm.define "jupyter" do |jupyter|
     jupyter.vm.box = "centos/7"
     jupyter.vm.hostname = "jupyter"
-    jupyter.vm.network "forwarded_port", guest: 8888, host: 8888
+    jupyter.vm.network "private_network", ip: "192.168.0.10"
+  end
+
+  config.vm.define "nginx" do |nginx|
+    nginx.vm.box = "centos/7"
+    nginx.vm.hostname = "nginx"
+    nginx.vm.network "private_network", ip: "192.168.0.20"
+    nginx.vm.network "forwarded_port", guest: 443, host: 4443
+    nginx.vm.network "forwarded_port", guest: 80, host: 8080
   end
 
   # Use :ansible or :ansible_local to
@@ -19,7 +27,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision :ansible do |ansible|
     ansible.playbook = "main.yml"
     ansible.groups = {
-      "jupyer" => ["jupyter"]
+      "jupyer" => ["jupyter"],
+      "nginx" => ["nginx"]
     }
   end
 end
