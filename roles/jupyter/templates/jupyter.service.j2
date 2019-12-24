@@ -1,0 +1,10 @@
+[Unit]
+Description=Jupyterhub
+
+[Service]
+User=root
+ExecStart=/bin/bash -c ". /root/.env/bin/activate;jupyterhub -f /root/jupyter_config.py --port=8888 &>> /var/log/jupyterhub.log"
+WorkingDirectory=/etc/jupyterhub
+
+[Install]
+WantedBy=multi-user.target

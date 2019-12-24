@@ -1,0 +1,61 @@
+---
+- name: install proxy
+  npm:
+    name: configurable-http-proxy
+    global: yes
+        
+- name: install jupyter server
+  pip:
+    name: jupyterhub
+    virtualenv: ~/.env
+    virtualenv_command: virtualenv --python=/usr/bin/python3
+
+- name: install notebook
+  pip:
+    name: notebook
+    virtualenv: ~/.env
+    virtualenv_command: virtualenv --python=/usr/bin/python3
+
+- name: install docker spawner
+  pip:
+    name: dockerspawner
+    virtualenv: ~/.env
+    virtualenv_command: virtualenv --python=/usr/bin/python3
+
+- name: add jupyter configuration
+  template:
+    src: jupyter_config.py.j2
+    dest: ~/jupyter_config.py
+
+- name: create jupyter_users group
+  group:
+    name: jupyter_users
+    state: present
+
+- name: create jupyterhub user
+  user:
+    name: jupyter
+    comment: user for jupyterhub
+    password: "{{ jupyter_password | password_hash('sha512') }}"
+    shell: /bin/bash
+    group: jupyter_users
+
+- name: add systemd service
+  template:
+    src: jupyter.service.j2
+    dest: /etc/systemd/system/jupyter.service
+
+- name: create jupyterhub folder
+  file:
+    path: /etc/jupyterhub
+    state: directory
+    mode: '0755'
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: start jupyterhub
+  service:
+    name: jupyter
+    state: restarted

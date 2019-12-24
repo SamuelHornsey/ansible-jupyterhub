@@ -1,0 +1,8 @@
+---
+- hosts: jupyter
+  become: yes
+  roles:
+    - python3
+    - node
+    - docker
+    - jupyter
